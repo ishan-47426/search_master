@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Master</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #daf1d8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+    }
+        .container {
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            padding: 20px;
+            background: #faf6ba;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+    }
+       h1 {
+            color: #333;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-box input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+        .search-box button {
+            padding: 10px 15px;
+            background: #0078ff;
+            color: rgb(194, 231, 255);
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+        .search-box button:hover {
+            background: #005bb5;
+        }
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-top: none;
+            background-color: #fff;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .suggestions div {
+            padding: 8px;
+            cursor: pointer;
+            color: #333;
+        }
+        .suggestions div:hover {
+            background-color: #f1f1f1;
+        }
+        .results {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .results ul {
+            list-style: none;
+            padding: 0;
+        }
+        .results li {
+            padding: 10px;
+            background: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 4px;
+
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e0f7fa;
+            border: 1px solid #00796b;
+            border-radius: 4px;
+            display: none; /* Initially hidden */
+        }
+        .result-box p {
+            margin: 5px 0;
+            color: #004d40;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                margin: 20px;
+            }
+
+            .search-box button {
+                font-size: 14px;
+            }
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Master</h1>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Type to search..." oninput="showSuggestions()">
+            <button onclick="performSearch()">Search</button>
+            <div class="suggestions" id="suggestions-box"></div>
+        </div>
+        <div class="results" id="results-box">
+            <h2>Search Results:</h2>
+            <ul id="results-list">
+            </ul>
+        </div>
+        <div class="result-box" id="result-box" style="display: none;">
+            <p id="resulted-item"></p>
+            <p id="resulted-description"></p>
+        </div>
+    </div>
+
+    <script>
+        const suggestions = [
+            { name: "JavaScript Tutorial", description: "Learn the basics of JavaScript." },
+           
+            { name: "HTML and CSS", description: "Build webpages using HTML and CSS." },
+           
+            { name: "Data Structures", description: "Study the fundamental data structures." },
+           
+            { name: "Frontend Development", description: "Dive into the world of frontend web development." }
+        ];
+        function showSuggestions() {
+            const input = document.getElementById("search-input").value.toLowerCase();
+            const suggestionsBox = document.getElementById("suggestions-box");
+
+            suggestionsBox.innerHTML = ''; 
+
+            if (input) {
+                const filteredSuggestions = suggestions.filter(item => 
+                    item.name.toLowerCase().includes(input)
+                );
+
+                filteredSuggestions.forEach(item => {
+                    const suggestionItem = document.createElement("div");
+                    suggestionItem.textContent = item.name;
+                    suggestionItem.onclick = () => selectSuggestion(item);
+                    suggestionsBox.appendChild(suggestionItem);
+                });
+
+                suggestionsBox.style.display = filteredSuggestions.length ? "block" : "none";
+            } else {
+                suggestionsBox.style.display = "none";
+            }
+        }
+        function selectSuggestion(item) {
+            document.getElementById("search-input").value = item.name;
+            document.getElementById("suggestions-box").style.display = "none";
+        }
+        function performSearch() {
+            const query = document.getElementById("search-input").value.trim();
+            const resultsBox = document.getElementById("results-list");
+            resultsBox.innerHTML = '';
+            const resultBox = document.getElementById("result-box");
+            const resultedItem = document.getElementById("resulted-item");
+            const resultedDescription = document.getElementById("resulted-description");
+
+            if (query) {
+                const results = suggestions.filter(item =>
+                    item.name.toLowerCase().includes(query.toLowerCase())
+                );
+
+                if (results.length) {
+                    results.forEach(result => {
+                        const resultItem = document.createElement("li");
+                        resultItem.textContent = result.name;
+                        resultsBox.appendChild(resultItem);
+                    });
+
+                    const firstResult = results[0];
+                    resultedItem.textContent = firstResult.name;
+                    resultedDescription.textContent = firstResult.description;
+                    resultBox.style.display = "block";
+                } else {
+                    resultsBox.innerHTML = '<li>No results found</li>';
+                    resultBox.style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
